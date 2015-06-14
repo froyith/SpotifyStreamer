@@ -41,7 +41,11 @@ public class ArtistFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_artist,container,false);
 
-        String[] testData = {
+
+
+        String[] testData;
+
+                testData =new String[] {
 
                 "test1",
                 "test2",
@@ -66,8 +70,15 @@ public class ArtistFragment extends Fragment {
 
         };
 
-        List<String> testDataList = new ArrayList<String>(Arrays.asList(testData));
+        List<String> testDataList = new ArrayList<String>(Arrays.asList(testData));;
+        if (savedInstanceState != null ){
+             testData = savedInstanceState.getStringArray("myKey");
+            if (testData != null) {
+                 testDataList = new ArrayList<String>(Arrays.asList(testData));
 
+            }
+
+        }
          mArtistAdapter =
                  new ArrayAdapter<String>(
                         //context
@@ -77,6 +88,7 @@ public class ArtistFragment extends Fragment {
                         testDataList);
 
        //
+//recover stored data if there is any
 
         ListView listView = (ListView) rootView.findViewById(
                 R.id.listview_artist);
@@ -122,6 +134,17 @@ public class ArtistFragment extends Fragment {
 
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        String[] values = new String[mArtistAdapter.getCount()];
+        for (int i = 0; i < mArtistAdapter.getCount(); i++)
+        {
+            values[i] = mArtistAdapter.getItem(i);
+        }
+        outState.putStringArray("myKey",values);
+    }
+
 
     public class FetchArtistsTask extends AsyncTask<String,Void,String[]> {
         private final String LOG_TAG = FetchArtistsTask.class.getSimpleName();
@@ -156,6 +179,7 @@ public class ArtistFragment extends Fragment {
               for (String artistStr : result) {
                 mArtistAdapter.add(artistStr);
               }
+
           }
 
         }
