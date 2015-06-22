@@ -64,10 +64,10 @@ String strTestArr[] = new String[]
 
 
         //List<String> testDataList = new ArrayList<String>(Arrays.asList(testData));;
-        if (savedInstanceState != null ){
-             //testData = savedInstanceState.getStringArray("myKey");
+        if (savedInstanceState != null && savedInstanceState.containsKey("KEY")){
+             mDataList =  savedInstanceState.getParcelableArrayList("KEY");
             //if (testData != null) {
-               //  mDataList = new ArrayList<ArtistData>(Arrays.asList(testData));
+
                 //ArrayList<User> newUsers = User.fromJson(jsonArray)
                 //adapter.addAll(newUsers);
                 //ArrayAdapter<Product> adapter = new ArrayAdapter<Product>(this,
@@ -100,11 +100,11 @@ String strTestArr[] = new String[]
         ListView listView = (ListView) rootView.findViewById(
                 R.id.listview_artist);
 
-View header = (View)inflater.inflate(R.layout.artist_list_item_layout, null);
+        View header = (View)inflater.inflate(R.layout.artist_list_item_layout, null);
         //listView.setAdapter(strArrAdapter);
         listView.addHeaderView(header);
         listView.setAdapter(mArtistAdapter);
-/*
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 
@@ -122,7 +122,7 @@ View header = (View)inflater.inflate(R.layout.artist_list_item_layout, null);
                 // TODO whatever you want to do to this item
             }
         });
-*/
+
         editText = (EditText) rootView.findViewById(R.id.edittext_artist);
         editText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
@@ -158,7 +158,11 @@ View header = (View)inflater.inflate(R.layout.artist_list_item_layout, null);
 
 
         outState.putStringArray("artistNames",artistNames);
+
+onSaveInstanceState(outState);
 */
+        ArrayList<ArtistData> test = new ArrayList<ArtistData>();
+        outState.putParcelableArrayList("KEY",mDataList);
     }
 
 
