@@ -61,9 +61,9 @@ public class ArtistData  implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(this.getArtistID());
-        parcel.writeString(this.getArtistImage()) ;
-        parcel.writeString(this.getArtistName());
+        parcel.writeString(this.mArtistID);
+        parcel.writeString(this.mArtistImage) ;
+        parcel.writeString(this.mArtistName);
 
     }
 

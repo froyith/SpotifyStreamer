@@ -8,7 +8,7 @@
 <ImageView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:src="@drawable/abc_ic_menu_cut_mtrl_alpha"
+
     android:id="@+id/artist_imageview"/>
 
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
