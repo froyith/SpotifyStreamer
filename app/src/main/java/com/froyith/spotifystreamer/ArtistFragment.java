@@ -30,10 +30,10 @@ import kaaes.spotify.webapi.android.models.Image;
 public class ArtistFragment extends Fragment {
     private ArrayList<ArtistData> mDataList = new ArrayList<ArtistData>();
 
-    private ArrayList<String> testData = new ArrayList<String>();
-    private ArrayAdapter strArrAdapter;
+    //private ArrayList<String> testData = new ArrayList<String>();
+    //private ArrayAdapter strArrAdapter;
     private ArtistArrayAdapter mArtistAdapter;
-    private  EditText editText;
+    private  EditText editText;//search for artist
 
 
 
@@ -67,18 +67,20 @@ public class ArtistFragment extends Fragment {
 
 
         listView.setAdapter(mArtistAdapter);
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             public void onItemClick(AdapterView<?> paramAdapterView, View paramView, int paramInt, long paramLong) {
-                Intent intent = new Intent(getActivity(), SongsActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, "test");//this will be the artistID
-
+                Intent intent = new Intent(getActivity(), SongsActivity.class);
+            //            .putExtra(Intent.EXTRA_TEXT, "test");//this will be the artistID
+            //    intent.putExtra(Intent.EXTRA_REFERRER_NAME ,"name");
+                TextView v=(TextView) paramView.findViewById(R.id.list_item_artist_textview);
+                intent.putExtra(Intent.EXTRA_TEXT,(String)v.getTag());
+                intent.putExtra(Intent.EXTRA_REFERRER_NAME,v.getText());
                 startActivity(intent);
 
             }
         });
-
+        //artist search text box
         editText = (EditText) rootView.findViewById(R.id.edittext_artist);
         editText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
@@ -93,6 +95,9 @@ public class ArtistFragment extends Fragment {
                 return false;
             }
         });
+
+
+
 
         return rootView;
 
@@ -142,19 +147,20 @@ public class ArtistFragment extends Fragment {
                     }
                     //find a better image size if available
                     for (Image img : art.images) {
-                        if (img.height <= 200)
+                        if ((img.height <= 200) && (bFoundImg == false)){
                             strImgUrl = img.url;
                             bFoundImg = true;
                         }
-                        if (bFoundImg == true) {
-                            strImgUrl = art.images.get(art.images.size() - 1).url; //get last if cant find right size
-                        }
+
+
+                    }
+
 
                     String strID = new String("");
 
                     d = new ArtistData(art.name, strImgUrl, art.id);
                     artistResults[i] = d;
-                    mDataList.add(d);
+                    //mDataList.add(d);
 
                     i++;
                 }
@@ -170,10 +176,10 @@ public class ArtistFragment extends Fragment {
 
                 mArtistAdapter.clear();
 
-                ArtistData adata = null;
+                //ArtistData adata = null;
 
                 for (ArtistData artist : result) {
-                    adata = new ArtistData(artist.getArtistName(), artist.getArtistImage(), artist.getArtistID());
+                    //adata = new ArtistData(artist.getArtistName(), artist.getArtistImage(), artist.getArtistID());
                     mArtistAdapter.add(artist);
                 }
 

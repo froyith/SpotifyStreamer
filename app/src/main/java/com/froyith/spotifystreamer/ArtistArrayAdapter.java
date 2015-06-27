@@ -66,6 +66,7 @@ public class ArtistArrayAdapter extends ArrayAdapter<ArtistData> {
             ahold = new ArtistHolder();
             ahold.imgArtist = (ImageView)v.findViewById(intImageView);
             ahold.txtArtistName= (TextView)v.findViewById(intTextView);
+
             v.setTag(ahold);
         }
 
@@ -78,6 +79,7 @@ public class ArtistArrayAdapter extends ArrayAdapter<ArtistData> {
         //TextView txtArtistName = (TextView) v.findViewById(R.id.list_item_artist_textview);
         //ImageView iArtistImage = (ImageView) v.findViewById(R.id.artist_imageview);
         ahold.txtArtistName.setText(adata.getArtistName());
+        ahold.txtArtistName.setTag(adata.getArtistID());
         ////Picasso.with(context).load(adata.getArtistImage()).into(ahold.imgArtist);
         if (adata.getArtistImage() != null) {
             Picasso.with(context).load(adata.getArtistImage()).into(ahold.imgArtist);
