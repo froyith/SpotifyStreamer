@@ -136,25 +136,22 @@ public class ArtistFragment extends Fragment {
                 //for (i=0 ; i < 20; i++)
                 for (Artist art : results.artists.items) {
                     boolean bFoundImg = false;
-                    String strImgUrl = new String();
+                    String strImgUrl = null;
                     //grab a picture url or null if none, but in for loop, then look for an ideal
                     //image size and take that path, otherwise use what we have here
-                    if (art.images.size() > 0) {
-                        strImgUrl = art.images.get(0).url;
-                    } else {
 
-                        strImgUrl = null;
-                    }
                     //find a better image size if available
                     for (Image img : art.images) {
-                        if ((img.height <= 200) && (bFoundImg == false)){
+                        if (img.height <= 200 && img.width <= 200 && bFoundImg == false){
                             strImgUrl = img.url;
                             bFoundImg = true;
                         }
 
-
                     }
 
+                    if (bFoundImg == false && art.images.size() > 0){
+                        strImgUrl = art.images.get(art.images.size()-1).url;
+                    }
 
                     String strID = new String("");
 

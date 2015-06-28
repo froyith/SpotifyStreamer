@@ -37,7 +37,8 @@ public class SongsArrayAdapter extends ArrayAdapter<SongData> {
 
 
     public SongsArrayAdapter(Context context,int listItemResourceId, int textViewSongResourceId, int textViewAlbumResourceId,int imgViewResourceId,ArrayList<SongData> sdata){
-        super(context,textViewSongResourceId,textViewAlbumResourceId,sdata);
+        super(context,listItemResourceId,textViewAlbumResourceId,sdata);
+
         //this.artistData = adata;
         songDataArrList = sdata;
 
@@ -68,6 +69,7 @@ public class SongsArrayAdapter extends ArrayAdapter<SongData> {
         View v = convertView;
         SongHolder shold;
         if (v == null) {
+
             v = LayoutInflater.from(getContext()).inflate(intListItemResourceId, parent, false);
             shold = new SongHolder();
             shold.imgSong = (ImageView)v.findViewById(intImageView);
@@ -89,7 +91,7 @@ public class SongsArrayAdapter extends ArrayAdapter<SongData> {
         shold.txtSongName.setText(sdata.getmSongName());
         ////Picasso.with(context).load(adata.getArtistImage()).into(ahold.imgArtist);
         if (sdata.getmAlbumImage() != null) {
-            //Picasso.with(context).load(sdata.getmAlbumImage()).into(shold.imgSong);
+            Picasso.with(context).load(sdata.getmAlbumImage()).into(shold.imgSong);
         }
         return v;
     }

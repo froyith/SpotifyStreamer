@@ -1,6 +1,8 @@
 package com.froyith.spotifystreamer;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -37,11 +39,9 @@ import kaaes.spotify.webapi.android.models.Tracks;
 
 public class SongsFragment extends Fragment {
 
-    //private ArrayAdapter<String> mSongsAdapter;
+
     private ArrayList<SongData> mDataList = new ArrayList<SongData>();
 
-    //private ArrayList<String> testData = new ArrayList<String>();
-    //private ArrayAdapter strArrAdapter;
     private SongsArrayAdapter mSongsAdapter;
 
 
@@ -57,6 +57,7 @@ public class SongsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
     }
 
     @Override
@@ -64,53 +65,21 @@ public class SongsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_songs,container,false);
+
+
+
+
+
         mDataList = new ArrayList<SongData>();
-        mSongsAdapter =
-                new SongsArrayAdapter(
-                        //context
-                        getActivity(),
-                        R.layout.artist_list_item_layout,
-                        R.id.list_item_songs_textview,
-                        R.id.list_item_album_textview,
-                        R.id.song_imageview,
-                        mDataList);
+        boolean bNeedSongData = false;
 
         if (savedInstanceState != null && savedInstanceState.containsKey("KEY")){
             mDataList =  savedInstanceState.getParcelableArrayList("KEY");
-            mSongsAdapter =
-                    new SongsArrayAdapter(
-                            //context
-                            getActivity(),
-                            R.layout.artist_list_item_layout,
-                            R.id.list_item_songs_textview,
-                            R.id.list_item_album_textview,
-                            R.id.song_imageview,
-                            mDataList);
+
         }else{
 
-            //Toast.makeText(getActivity(), (String)this.getActivity().getIntent().getExtras().get(Intent.EXTRA_TEXT), Toast.LENGTH_SHORT).show();
-            //Toast.makeText(getActivity(), (String)this.getActivity().getIntent().getExtras().get(Intent.EXTRA_REFERRER_NAME), Toast.LENGTH_SHORT).show();
-
-            FetchSongsTask fetch = new FetchSongsTask();
-            fetch.execute((String)this.getActivity().getIntent().getExtras().get(Intent.EXTRA_TEXT));
-
+            bNeedSongData = true;
         }
-
-
-
-        //String[] testData;
-        //testData = new String[]{"test","test2"};
-
-        //List<String> testDataList = new ArrayList<String>(Arrays.asList(testData));;
-        //if (savedInstanceState != null ){
-            //testData = savedInstanceState.getStringArray("myKey");
-            //if (testData != null) {
-            //    testDataList = new ArrayList<String>(Arrays.asList(testData));
-
-            //}
-
-        //}
-
 
         mSongsAdapter =
         new SongsArrayAdapter(
@@ -119,8 +88,15 @@ public class SongsFragment extends Fragment {
                 R.layout.songs_list_item_layout,
                 R.id.list_item_songs_textview,
                 R.id.list_item_album_textview,
-                R.id.artist_imageview,
+                R.id.song_imageview,
                 mDataList);
+
+        if (bNeedSongData == true){
+
+            FetchSongsTask fetch = new FetchSongsTask();
+            fetch.execute((String)this.getActivity().getIntent().getExtras().get(Intent.EXTRA_TEXT));
+
+        }
 //recover stored data if there is any
 
         ListView listView = (ListView) rootView.findViewById(
@@ -140,11 +116,8 @@ public class SongsFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
                        // .putExtra(Intent.EXTRA_TEXT, "test");
 
-
-
                 startActivity(intent);
 
-                // TODO whatever you want to do to this item
             }
         });
 
@@ -167,8 +140,7 @@ public class SongsFragment extends Fragment {
             //Toast.makeText(getActivity(), "34343", Toast.LENGTH_SHORT).show();
             Tracks results = null;
             try {
-                //Object test;
-
+                //must add give country code with getartisttoptracks
                 Map<String, Object> options = new HashMap<>();
                 options.put("country", "US");
 
@@ -176,26 +148,21 @@ public class SongsFragment extends Fragment {
                 results = spotify.getArtistTopTrack(searchStr[0],options);
                 //results = (Tracks)test;
             }catch (Exception e){
-                Log.d("me", "doInBackground error : " + str+ " : " + e.toString());
+                Log.d("me", "doInBackground error : " + e.toString());
 
             }
 
-            ;
-            //results.tracks.get()
-            //ArtistsPager results = spotify.searchArtists(searchStr[0]);
 
-            //SongData sdata[] = new SongData[results.tracks.size()];
-            //SongData sdata[] = new SongData[10];
             int i = 0;
 
             SongData d = null;
             SongData songResults[] = null;
             String strImgUrl = null;
-            //ArtistData artistResults[] = new ArtistData[20];
+
             if (results != null){
             if (results.tracks.size() > 0) {
                 songResults = new SongData[results.tracks.size()];
-                //for (i=0 ; i < 20; i++)
+
                 for (Track t : results.tracks) {
                     boolean bFoundImg = false;
                     strImgUrl = new String();
@@ -209,19 +176,15 @@ public class SongsFragment extends Fragment {
                     }
                     //find a better image size if available
                     for (Image img : t.album.images) {
-                        if (img.height <= 200)
+                        if (img.height <= 200 && img.width <=200 && bFoundImg == false) {
                             strImgUrl = img.url;
-                        bFoundImg = true;
+                            bFoundImg = true;
+                        }
                     }
-                    if (bFoundImg == true) {
-                        strImgUrl = t.album.images.get(t.album.images.size() - 1).url; //get last if cant find right size
-                    }
-
-                    String strID = new String("");
 
                     d = new SongData( t.name, strImgUrl,t.album.name);
                     songResults[i] = d;
-                    //mDataList.add(d);
+
 
                     i++;
                 }

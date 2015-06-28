@@ -1,10 +1,14 @@
 package com.froyith.spotifystreamer;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.froyith.spotifystreamer.data.ArtistData;
@@ -24,15 +28,28 @@ public class SongsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        LayoutInflater inflator = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflator.inflate(R.layout.song_menu_layout,null);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setCustomView(v);
         setContentView(R.layout.activity_songs);
+
+
+
     }
 
-    //@Override
-    //public boolean onCreateOptionsMenu(Menu menu) {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+
+
     //    // Inflate the menu; this adds items to the action bar if it is present.
     //    //getMenuInflater().inflate(R.menu.menu_songs, menu);
-    //    return true;
-    //}
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
