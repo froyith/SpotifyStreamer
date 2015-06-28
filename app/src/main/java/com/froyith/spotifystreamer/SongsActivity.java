@@ -1,6 +1,7 @@
 package com.froyith.spotifystreamer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.froyith.spotifystreamer.data.ArtistData;
@@ -36,8 +38,10 @@ public class SongsActivity extends AppCompatActivity {
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setCustomView(v);
         setContentView(R.layout.activity_songs);
-
-
+        //set action bar Artist name
+        TextView textView = (TextView) v.findViewById(
+                R.id.artistNameBar);
+        textView.setText((String)this.getIntent().getExtras().get(Intent.EXTRA_REFERRER_NAME));
 
     }
 

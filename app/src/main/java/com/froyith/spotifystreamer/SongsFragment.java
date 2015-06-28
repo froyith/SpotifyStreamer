@@ -46,9 +46,6 @@ public class SongsFragment extends Fragment {
 
 
 
-
-
-
     public SongsFragment() {
         // Required empty public constructor
     }
@@ -65,7 +62,6 @@ public class SongsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_songs,container,false);
-
 
 
 

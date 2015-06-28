@@ -5,13 +5,13 @@
     android:orientation="vertical">
 
     <TextView
-        android:text="Top 10 Tracks"
+        android:text="@string/sTop10"
         android:textSize="20sp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/white"/>
     <TextView
-        android:text="Metallica"
+        android:id="@+id/artistNameBar"
         android:textSize="15sp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
