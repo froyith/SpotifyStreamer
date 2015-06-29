@@ -38,9 +38,9 @@ public class SongsActivity extends AppCompatActivity {
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setCustomView(v);
         setContentView(R.layout.activity_songs);
+
         //set action bar Artist name
-        TextView textView = (TextView) v.findViewById(
-                R.id.artistNameBar);
+        TextView textView = (TextView) v.findViewById(R.id.artistNameBar);
         textView.setText((String)this.getIntent().getExtras().get(Intent.EXTRA_REFERRER_NAME));
 
     }
@@ -48,10 +48,8 @@ public class SongsActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-
-
-    //    // Inflate the menu; this adds items to the action bar if it is present.
-    //    //getMenuInflater().inflate(R.menu.menu_songs, menu);
+        //Since not using a menu, commenting out the following:
+        //getMenuInflater().inflate(R.menu.menu_songs, menu);
         return true;
     }
 

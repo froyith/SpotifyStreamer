@@ -25,10 +25,12 @@ import kaaes.spotify.webapi.android.models.Artist;
 
 /**
  * Created by fsmith on 6/16/2015.
+ * custom arrayadapter for song data
+ * contains subclass to hold references to the bound Views
  */
 public class SongsArrayAdapter extends ArrayAdapter<SongData> {
     private ArrayList<SongData> songDataArrList = new ArrayList<SongData>();
-    //private ArtistData[] artistData;
+
     private int intImageView;
     private int intTextViewSong;
     private int intTextViewAlbum;
@@ -39,9 +41,7 @@ public class SongsArrayAdapter extends ArrayAdapter<SongData> {
     public SongsArrayAdapter(Context context,int listItemResourceId, int textViewSongResourceId, int textViewAlbumResourceId,int imgViewResourceId,ArrayList<SongData> sdata){
         super(context,listItemResourceId,textViewAlbumResourceId,sdata);
 
-        //this.artistData = adata;
         songDataArrList = sdata;
-
         this.context = context;
         this.intImageView = imgViewResourceId;
         this.intTextViewSong = textViewSongResourceId;
@@ -52,7 +52,6 @@ public class SongsArrayAdapter extends ArrayAdapter<SongData> {
 
     @Override
     public void add(SongData sdata) {
-//        super.add(adata);
         songDataArrList.add(sdata);
     }
 
@@ -84,12 +83,10 @@ public class SongsArrayAdapter extends ArrayAdapter<SongData> {
 
 
         SongData sdata = songDataArrList.get(position);
-        //TextView txtArtistName = (TextView) v.findViewById(R.id.list_item_artist_textview);
-        //ImageView iArtistImage = (ImageView) v.findViewById(R.id.artist_imageview);
 
         shold.txtAlbumName.setText(sdata.getmAlbumName());
         shold.txtSongName.setText(sdata.getmSongName());
-        ////Picasso.with(context).load(adata.getArtistImage()).into(ahold.imgArtist);
+
         if (sdata.getmAlbumImage() != null) {
             Picasso.with(context).load(sdata.getmAlbumImage()).into(shold.imgSong);
         }

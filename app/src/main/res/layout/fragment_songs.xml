@@ -2,11 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" tools:context="com.froyith.spotifystreamer.SongsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <ListView
         android:id="@+id/listview_songs"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent"/>
 
 </FrameLayout>

@@ -1,35 +1,21 @@
 package com.froyith.spotifystreamer;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.content.Context;
+
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import com.froyith.spotifystreamer.data.ArtistData;
 import com.froyith.spotifystreamer.data.SongData;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Image;
@@ -40,11 +26,9 @@ import kaaes.spotify.webapi.android.models.Tracks;
 public class SongsFragment extends Fragment {
 
 
+    private static final String COUNTRY_CODE = "US";
     private ArrayList<SongData> mDataList = new ArrayList<SongData>();
-
     private SongsArrayAdapter mSongsAdapter;
-
-
 
     public SongsFragment() {
         // Required empty public constructor
@@ -54,7 +38,6 @@ public class SongsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
     }
 
     @Override
@@ -63,21 +46,19 @@ public class SongsFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_songs,container,false);
 
+        mDataList = new ArrayList<SongData>();//datasource to bound to our custom array adapter to list view controls
+        boolean bNeedSongData = false; //flags that a song lookup for the artist needs to be performed
+        //Recover stored data if any, othewise flag that a song search needs to be performed
+        if (savedInstanceState != null && savedInstanceState.containsKey("KEY")){//try to grab our paraceable custom arraylist from savestate
 
-
-
-        mDataList = new ArrayList<SongData>();
-        boolean bNeedSongData = false;
-
-        if (savedInstanceState != null && savedInstanceState.containsKey("KEY")){
             mDataList =  savedInstanceState.getParcelableArrayList("KEY");
 
         }else{
 
-            bNeedSongData = true;
+            bNeedSongData = true; //need to fetch data from spotify api
         }
 
-        mSongsAdapter =
+        mSongsAdapter = //custom adapter for song meta data
         new SongsArrayAdapter(
                 //context
                 getActivity(),
@@ -93,10 +74,9 @@ public class SongsFragment extends Fragment {
             fetch.execute((String)this.getActivity().getIntent().getExtras().get(Intent.EXTRA_TEXT));
 
         }
-//recover stored data if there is any
 
-        ListView listView = (ListView) rootView.findViewById(
-                R.id.listview_songs);
+
+        ListView listView = (ListView) rootView.findViewById(R.id.listview_songs);
 
         listView.setAdapter(mSongsAdapter);
 
@@ -108,16 +88,11 @@ public class SongsFragment extends Fragment {
             public void onItemClick(AdapterView<?> paramAdapterView, View paramView, int paramInt,
                                     long paramLong) {
 
-
+                //not implemented yet, just opens hello world activity
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
-                       // .putExtra(Intent.EXTRA_TEXT, "test");
-
                 startActivity(intent);
-
             }
         });
-
-
 
         return rootView;
     }
@@ -133,43 +108,36 @@ public class SongsFragment extends Fragment {
             SpotifyApi api = new SpotifyApi();
             SpotifyService spotify = api.getService();
             String str = null;
-            //Toast.makeText(getActivity(), "34343", Toast.LENGTH_SHORT).show();
+
             Tracks results = null;
-            try {
+            try {   //just incase server changes and get bad results, log exceptions
                 //must add give country code with getartisttoptracks
                 Map<String, Object> options = new HashMap<>();
-                options.put("country", "US");
-
+                options.put("country", COUNTRY_CODE);
 
                 results = spotify.getArtistTopTrack(searchStr[0],options);
-                //results = (Tracks)test;
+
             }catch (Exception e){
-                Log.d("me", "doInBackground error : " + e.toString());
+                Log.d(this.LOG_TAG, e.toString());
 
             }
 
-
-            int i = 0;
-
-            SongData d = null;
+            int i = 0;//result array index
+            SongData sd = null;
             SongData songResults[] = null;
             String strImgUrl = null;
+            boolean bFoundImg = false;
 
             if (results != null){
             if (results.tracks.size() > 0) {
                 songResults = new SongData[results.tracks.size()];
 
                 for (Track t : results.tracks) {
-                    boolean bFoundImg = false;
-                    strImgUrl = new String();
+
+                    strImgUrl = null;
                     //grab a picture url or null if none, but in for loop, then look for an ideal
                     //image size and take that path, otherwise use what we have here
-                    if (t.album.images.size() > 0) {
-                        strImgUrl = t.album.images.get(0).url;
-                    } else {
 
-                        strImgUrl = null;
-                    }
                     //find a better image size if available
                     for (Image img : t.album.images) {
                         if (img.height <= 200 && img.width <=200 && bFoundImg == false) {
@@ -177,11 +145,12 @@ public class SongsFragment extends Fragment {
                             bFoundImg = true;
                         }
                     }
-
-                    d = new SongData( t.name, strImgUrl,t.album.name);
-                    songResults[i] = d;
-
-
+                    //set it to something
+                    if (bFoundImg == false && t.album.images.size() > 0) {
+                        strImgUrl = t.album.images.get(0).url;
+                    }
+                    sd = new SongData( t.name, strImgUrl,t.album.name);
+                    songResults[i] = sd;
                     i++;
                 }
             }
@@ -196,10 +165,8 @@ public class SongsFragment extends Fragment {
 
                 mSongsAdapter.clear();
 
-                //SongData sdata = null;
 
                 for (SongData song : result) {
-                    //sdata = new SongData(artist.getArtistName(), artist.getArtistImage(), artist.getArtistID());
                     mSongsAdapter.add(song);
                 }
 
