@@ -119,7 +119,8 @@ public class ArtistFragment extends Fragment {
             SpotifyApi api = new SpotifyApi();
             SpotifyService spotify = api.getService();
             ArtistsPager results = spotify.searchArtists(searchStr[0]);
-
+            boolean bFoundImg = false;
+            String strImgUrl = null;
             int i = 0;
 
             ArtistData ad = null;
@@ -129,14 +130,14 @@ public class ArtistFragment extends Fragment {
                 artistResults = new ArtistData[results.artists.items.size()];
 
                 for (Artist art : results.artists.items) {
-                    boolean bFoundImg = false;
-                    String strImgUrl = null;
+
                     //grab a picture url or null if none, but in for loop, then look for an ideal
                     //image size and take that path, otherwise use what we have here
 
                     //find suitable image size if available
+                    bFoundImg = false;
                     for (Image img : art.images) {
-                        if (img.height <= 200 && img.width <= 200 && bFoundImg == false){
+                        if (img.height > 180 && img.height < 220 && bFoundImg == false){
                             strImgUrl = img.url;
                             bFoundImg = true;
                         }

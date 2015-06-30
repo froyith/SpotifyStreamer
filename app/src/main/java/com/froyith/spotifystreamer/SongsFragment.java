@@ -104,10 +104,14 @@ public class SongsFragment extends Fragment {
 
         @Override
         protected SongData[] doInBackground(String... searchStr) {
-            //given code example
+            //spotify api is used to perform artist and track searches, and later streaming music
             SpotifyApi api = new SpotifyApi();
             SpotifyService spotify = api.getService();
-            String str = null;
+            int i = 0;//result array index
+            SongData sd = null;
+            SongData songResults[] = null;
+            String strImgUrl;
+            boolean bFoundImg = false;
 
             Tracks results = null;
             try {   //just incase server changes and get bad results, log exceptions
@@ -122,12 +126,7 @@ public class SongsFragment extends Fragment {
 
             }
 
-            int i = 0;//result array index
-            SongData sd = null;
-            SongData songResults[] = null;
-            String strImgUrl = null;
-            boolean bFoundImg = false;
-
+            
             if (results != null){
             if (results.tracks.size() > 0) {
                 songResults = new SongData[results.tracks.size()];
@@ -138,16 +137,17 @@ public class SongsFragment extends Fragment {
                     //grab a picture url or null if none, but in for loop, then look for an ideal
                     //image size and take that path, otherwise use what we have here
 
-                    //find a better image size if available
+                    //find a reasonably sized image if available
+                    bFoundImg = false;
                     for (Image img : t.album.images) {
-                        if (img.height <= 200 && img.width <=200 && bFoundImg == false) {
+                        if (img.height > 180 && img.height < 220 && bFoundImg == false) {
                             strImgUrl = img.url;
                             bFoundImg = true;
                         }
                     }
-                    //set it to something
+                    //just grab last image from end of list if suitable size one isn't available
                     if (bFoundImg == false && t.album.images.size() > 0) {
-                        strImgUrl = t.album.images.get(0).url;
+                        strImgUrl = t.album.images.get(t.album.images.size()-1).url;
                     }
                     sd = new SongData( t.name, strImgUrl,t.album.name);
                     songResults[i] = sd;
