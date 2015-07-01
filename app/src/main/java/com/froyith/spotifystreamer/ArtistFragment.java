@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,8 +36,8 @@ import kaaes.spotify.webapi.android.models.Image;
 public class ArtistFragment extends Fragment {
     private ArrayList<ArtistData> mDataList = new ArrayList<ArtistData>();
     private ArtistArrayAdapter mArtistAdapter;
-    private  EditText txtSearchArtist;//search for artist
-
+    //private  EditText txtSearchArtist;//search for artist
+    private SearchView searchView; //search for artist ;
     public ArtistFragment() {
     }
 
@@ -77,21 +79,23 @@ public class ArtistFragment extends Fragment {
             }
         });
         //artist search text box
-        txtSearchArtist = (EditText) rootView.findViewById(R.id.edittext_artist);
-        txtSearchArtist.setOnEditorActionListener(new EditText.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if(actionId== EditorInfo.IME_ACTION_DONE){
-                    //lookup artists
-                    FetchArtistsTask fetch = new FetchArtistsTask();
+        //switching to searchView per instructor recommendation... it is easier
+        searchView = (SearchView) rootView.findViewById(R.id.search_artist);
+        searchView.setOnQueryTextListener(
+                new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        //lookup artists
+                        FetchArtistsTask fetch = new FetchArtistsTask();
 
-                    fetch.execute(txtSearchArtist.getText().toString());
-                }
-
-                return false;
-            }
-        });
-
+                        fetch.execute((searchView.getQuery().toString()));
+                        return true;
+                    }
+                    @Override
+                    public boolean onQueryTextChange(String newText) {
+                        return false;
+                    }
+                });
 
 
 
@@ -104,7 +108,6 @@ public class ArtistFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        ArrayList<ArtistData> test = new ArrayList<ArtistData>();
         outState.putParcelableArrayList("KEY",mDataList);
     }
 
@@ -118,7 +121,18 @@ public class ArtistFragment extends Fragment {
             //given code example
             SpotifyApi api = new SpotifyApi();
             SpotifyService spotify = api.getService();
-            ArtistsPager results = spotify.searchArtists(searchStr[0]);
+
+
+
+            ArtistsPager results = null;
+            try {
+                results = spotify.searchArtists(searchStr[0]);
+            }
+
+            catch(Exception e){
+                Log.d(this.LOG_TAG, e.toString());
+            }
+
             boolean bFoundImg = false;
             String strImgUrl = null;
             int i = 0;
@@ -126,35 +140,36 @@ public class ArtistFragment extends Fragment {
             ArtistData ad = null;
             ArtistData artistResults[] = null;
             //process the results, filling data into custom arraylist of artist search results
-            if (results.artists.items.size() > 0) {
-                artistResults = new ArtistData[results.artists.items.size()];
+            if (results != null) {
+                if (results.artists.items.size() > 0) {
+                    artistResults = new ArtistData[results.artists.items.size()];
 
-                for (Artist art : results.artists.items) {
+                    for (Artist art : results.artists.items) {
 
-                    //grab a picture url or null if none, but in for loop, then look for an ideal
-                    //image size and take that path, otherwise use what we have here
+                        //grab a picture url or null if none, but in for loop, then look for an ideal
+                        //image size and take that path, otherwise use what we have here
 
-                    //find suitable image size if available
-                    bFoundImg = false;
-                    for (Image img : art.images) {
-                        if (img.height > 180 && img.height < 220 && bFoundImg == false){
-                            strImgUrl = img.url;
-                            bFoundImg = true;
+                        //find suitable image size if available
+                        bFoundImg = false;
+                        for (Image img : art.images) {
+                            if (img.height > 180 && img.height < 220 && bFoundImg == false) {
+                                strImgUrl = img.url;
+                                bFoundImg = true;
+                            }
+
+                        }
+                        //just grab last image from end of list if suitable size one isn't available
+                        if (bFoundImg == false && art.images.size() > 0) {
+                            strImgUrl = art.images.get(art.images.size() - 1).url;
                         }
 
-                    }
-                    //just grab last image from end of list if suitable size one isn't available
-                    if (bFoundImg == false && art.images.size() > 0){
-                        strImgUrl = art.images.get(art.images.size()-1).url;
+                        ad = new ArtistData(art.name, strImgUrl, art.id);
+                        artistResults[i] = ad;
+                        i++;
                     }
 
-                    ad = new ArtistData(art.name, strImgUrl, art.id);
-                    artistResults[i] = ad;
-                    i++;
                 }
-
             }
-
             return artistResults;
         }
 

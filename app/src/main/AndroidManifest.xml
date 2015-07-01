@@ -28,7 +28,7 @@
             android:label="@string/title_activity_songs" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.froyith.spotifystreamer.MainActivity" />
         </activity>
 
     </application>

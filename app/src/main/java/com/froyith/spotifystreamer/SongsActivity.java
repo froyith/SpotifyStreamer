@@ -3,6 +3,7 @@ package com.froyith.spotifystreamer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,12 +32,14 @@ public class SongsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        //getActionBar().setDisplayHomeAsUpEnabled(true);
         LayoutInflater inflator = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflator.inflate(R.layout.song_menu_layout,null);
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setCustomView(v);
+        actionBar.setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_songs);
 
         //set action bar Artist name
@@ -58,14 +61,21 @@ public class SongsActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        //{case android.R.id.home: onBackPressed();break;}
+
+        switch (item.getItemId()) {
+
+            case android.R.id.home:
+                //not sure, the behavior of the back button seems how I'd like it, finishing current activity and resuming previous
+                this.finish();
+                //tried this from the back button activity bar article, and it starts a new activity
+                //NavUtils.navigateUpFromSameTask(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
 
-        return super.onOptionsItemSelected(item);
     }
 
 }

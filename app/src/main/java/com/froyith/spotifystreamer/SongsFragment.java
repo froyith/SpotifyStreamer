@@ -47,7 +47,7 @@ public class SongsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_songs,container,false);
 
         mDataList = new ArrayList<SongData>();//datasource to bound to our custom array adapter to list view controls
-        boolean bNeedSongData = false; //flags that a song lookup for the artist needs to be performed
+
         //Recover stored data if any, othewise flag that a song search needs to be performed
         if (savedInstanceState != null && savedInstanceState.containsKey("KEY")){//try to grab our paraceable custom arraylist from savestate
 
@@ -55,7 +55,8 @@ public class SongsFragment extends Fragment {
 
         }else{
 
-            bNeedSongData = true; //need to fetch data from spotify api
+            FetchSongsTask fetch = new FetchSongsTask();
+            fetch.execute((String)this.getActivity().getIntent().getExtras().get(Intent.EXTRA_TEXT));
         }
 
         mSongsAdapter = //custom adapter for song meta data
@@ -67,13 +68,6 @@ public class SongsFragment extends Fragment {
                 R.id.list_item_album_textview,
                 R.id.song_imageview,
                 mDataList);
-
-        if (bNeedSongData == true){
-
-            FetchSongsTask fetch = new FetchSongsTask();
-            fetch.execute((String)this.getActivity().getIntent().getExtras().get(Intent.EXTRA_TEXT));
-
-        }
 
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_songs);
@@ -95,6 +89,13 @@ public class SongsFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //save the list so it can be retrieved without requerying
+        outState.putParcelableArrayList("KEY",mDataList);
     }
 
 
@@ -122,11 +123,12 @@ public class SongsFragment extends Fragment {
                 results = spotify.getArtistTopTrack(searchStr[0],options);
 
             }catch (Exception e){
+                //catch RetrofitError
                 Log.d(this.LOG_TAG, e.toString());
 
             }
 
-            
+
             if (results != null){
             if (results.tracks.size() > 0) {
                 songResults = new SongData[results.tracks.size()];
