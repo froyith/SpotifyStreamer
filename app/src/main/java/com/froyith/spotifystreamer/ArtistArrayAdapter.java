@@ -57,6 +57,11 @@ public class ArtistArrayAdapter extends ArrayAdapter<ArtistData> {
     }
 
     @Override
+    public ArtistData getItem(int position) {
+        return artistDataArrList.get(position);
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
         ArtistHolder ahold;
@@ -65,14 +70,11 @@ public class ArtistArrayAdapter extends ArrayAdapter<ArtistData> {
             ahold = new ArtistHolder();
             ahold.imgArtist = (ImageView)v.findViewById(intImageView);
             ahold.txtArtistName= (TextView)v.findViewById(intTextView);
-
             v.setTag(ahold);
         }
-
         else{
             ahold= (ArtistHolder)v.getTag();
         }
-
 
         ArtistData adata = artistDataArrList.get(position);
 

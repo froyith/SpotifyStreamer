@@ -1,16 +1,41 @@
 package com.froyith.spotifystreamer;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.froyith.spotifystreamer.data.SongData;
+import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
-
+private SongData mSongData = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        //strTest = (String)this.getIntent().getExtras().get(Intent.EXTRA_TEXT);
+        //intent.putExtra(Intent.EXTRA_REFERRER_NAME,sd.getmSongName());
+        //intent.putExtra(Intent.EXTRA_REFERRER,sd.getmAlbumName());
+        mSongData = (SongData) this.getIntent().getExtras().get(Intent.EXTRA_REFERRER);
+        String strArtist = (String) this.getIntent().getExtras().get(Intent.EXTRA_REFERRER_NAME);
+        ImageView imgView = (ImageView) findViewById(R.id.imgAlbumDetail);
+
+        TextView txtAlbum =(TextView) findViewById(R.id.txtAlbumDetail);
+
+        TextView txtSong =(TextView) findViewById(R.id.txtSongDetail);
+        TextView txtArtist =(TextView) findViewById(R.id.txtArtistDetail);
+        txtAlbum.setText(mSongData.getmAlbumName());
+        txtSong.setText(mSongData.getmSongName());
+        txtArtist.setText(strArtist);
+        Picasso.with(getApplicationContext()).load(mSongData.getmLargeImage()).into(imgView);
+
     }
 
     @Override
@@ -33,5 +58,14 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    public void playerHandler(View v){
+        //
+        //v.setImageResource(android.R.drawable.ic_media_pause);
+       Intent intent = new Intent(v.getContext(), SpotifyStreamer.class);
+        intent.putExtra(Intent.EXTRA_TEXT,mSongData.getmTrackURL());
+        startService(intent);
+        Toast.makeText(v.getContext(), "playing", Toast.LENGTH_SHORT).show();
+
     }
 }

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.froyith.spotifystreamer.data.SongData;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class SongsFragment extends Fragment {
     private static final String COUNTRY_CODE = "US";
     private ArrayList<SongData> mDataList = new ArrayList<SongData>();
     private SongsArrayAdapter mSongsAdapter;
-
+    private String strArtist;
     public SongsFragment() {
         // Required empty public constructor
     }
@@ -47,6 +48,7 @@ public class SongsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_songs,container,false);
 
         mDataList = new ArrayList<SongData>();//datasource to bound to our custom array adapter to list view controls
+        strArtist = (String) this.getActivity().getIntent().getExtras().get(Intent.EXTRA_REFERRER_NAME);
 
         //Recover stored data if any, othewise flag that a song search needs to be performed
         if (savedInstanceState != null && savedInstanceState.containsKey("KEY")){//try to grab our paraceable custom arraylist from savestate
@@ -82,8 +84,15 @@ public class SongsFragment extends Fragment {
             public void onItemClick(AdapterView<?> paramAdapterView, View paramView, int paramInt,
                                     long paramLong) {
 
-                //not implemented yet, just opens hello world activity
+                SongData sd = null;
+
+
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
+
+                sd = (SongData)paramAdapterView.getItemAtPosition(paramInt);
+                intent.putExtra(Intent.EXTRA_REFERRER_NAME,strArtist);
+                intent.putExtra(Intent.EXTRA_REFERRER,sd);
+
                 startActivity(intent);
             }
         });
@@ -141,6 +150,10 @@ public class SongsFragment extends Fragment {
 
                     //find a reasonably sized image if available
                     bFoundImg = false;
+
+                    //fs: need to add song url and large image url
+                    //t.preview_url; //this will be for streaming
+
                     for (Image img : t.album.images) {
                         if (img.height > 180 && img.height < 220 && bFoundImg == false) {
                             strImgUrl = img.url;
@@ -151,7 +164,7 @@ public class SongsFragment extends Fragment {
                     if (bFoundImg == false && t.album.images.size() > 0) {
                         strImgUrl = t.album.images.get(t.album.images.size()-1).url;
                     }
-                    sd = new SongData( t.name, strImgUrl,t.album.name);
+                    sd = new SongData( t.name, strImgUrl,t.album.name,t.album.images.get(0).url,t.preview_url);
                     songResults[i] = sd;
                     i++;
                 }

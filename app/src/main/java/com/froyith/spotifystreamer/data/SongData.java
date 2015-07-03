@@ -12,19 +12,41 @@ public class SongData implements Parcelable {
     private String mSongName = "";
     private String mAlbumName = "";
     private String mAlbumImage = "";
+    //new members
+    private String mLargeImage = "";
+
+    public String getmLargeImage() {
+        return mLargeImage;
+    }
+
+    public void setmLargeImage(String mLargeImage) {
+        this.mLargeImage = mLargeImage;
+    }
+
+    public String getmTrackURL() {
+        return mTrackURL;
+    }
+
+    public void setmTrackURL(String mTrackURL) {
+        this.mTrackURL = mTrackURL;
+    }
+
+    private String mTrackURL = "";
 
     public SongData()  {
         super();
 
     }
-    public SongData(String songName,String albumImage,String albumName){
+
+
+    public SongData(String songName,String albumImage,String albumName, String largeImage, String trackURL){
         super();
         mSongName = songName;
         mAlbumImage = albumImage;
         mAlbumName = albumName;
+        mLargeImage = largeImage;
+        mTrackURL = trackURL;
     }
-
-
 
 
     @Override
@@ -37,7 +59,8 @@ public class SongData implements Parcelable {
         parcel.writeString(this.mAlbumImage);
         parcel.writeString(this.mAlbumName) ;
         parcel.writeString(this.mSongName);
-
+        parcel.writeString(this.mLargeImage) ;
+        parcel.writeString(this.mTrackURL);
     }
 
 
@@ -51,7 +74,8 @@ public class SongData implements Parcelable {
         this.mAlbumImage = in.readString() ;
         this.mAlbumName= in.readString() ;
         this.mSongName = in.readString() ;
-
+        this.mLargeImage = in.readString();
+        this.mTrackURL = in.readString();
 
     }
 
