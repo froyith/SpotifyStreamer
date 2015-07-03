@@ -5,6 +5,6 @@
     <string name="sArtist">Artist</string>
     <string name="sTop10">Top 10 Tracks</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_detail">DetailActivity</string>
+    <string name="title_activity_detail">Spotify Streamer</string>
     <string name="title_activity_songs">Spotify Streamer</string>
 </resources>
