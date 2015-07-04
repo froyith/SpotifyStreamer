@@ -1,5 +1,6 @@
 package com.froyith.spotifystreamer;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +17,7 @@ import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
 private SongData mSongData = null;
+    public static SeekBar seekBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,6 +26,8 @@ private SongData mSongData = null;
         //strTest = (String)this.getIntent().getExtras().get(Intent.EXTRA_TEXT);
         //intent.putExtra(Intent.EXTRA_REFERRER_NAME,sd.getmSongName());
         //intent.putExtra(Intent.EXTRA_REFERRER,sd.getmAlbumName());
+        seekBar = (SeekBar) findViewById(R.id.mediaSeekBar);
+
         mSongData = (SongData) this.getIntent().getExtras().get(Intent.EXTRA_REFERRER);
         String strArtist = (String) this.getIntent().getExtras().get(Intent.EXTRA_REFERRER_NAME);
         ImageView imgView = (ImageView) findViewById(R.id.imgAlbumDetail);
@@ -36,6 +41,14 @@ private SongData mSongData = null;
         txtArtist.setText(strArtist);
         Picasso.with(getApplicationContext()).load(mSongData.getmLargeImage()).into(imgView);
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        //super.onDestroy();
+        //stopService(playIntent);
+        //musicSrv=null;
+        super.onDestroy();
     }
 
     @Override
@@ -62,10 +75,23 @@ private SongData mSongData = null;
     public void playerHandler(View v){
         //
         //v.setImageResource(android.R.drawable.ic_media_pause);
-       Intent intent = new Intent(v.getContext(), SpotifyStreamer.class);
-        intent.putExtra(Intent.EXTRA_TEXT,mSongData.getmTrackURL());
+       Intent intent = new Intent(v.getContext(), SpotifyStreamingService.class);
+        intent.setAction("com.froyith.spotifystreamingservice.action.PLAY");
+
+        intent.putExtra(Intent.EXTRA_TEXT, mSongData.getmTrackURL());
         startService(intent);
         Toast.makeText(v.getContext(), "playing", Toast.LENGTH_SHORT).show();
+
+    }
+    public void pauseHandler(View v){
+        //
+        //v.setImageResource(android.R.drawable.ic_media_pause);
+        Intent intent = new Intent(v.getContext(), SpotifyStreamingService.class);
+        intent.setAction("com.froyith.spotifystreamingservice.action.PAUSE");
+
+        intent.putExtra(Intent.EXTRA_TEXT,mSongData.getmTrackURL());
+        startService(intent);
+        Toast.makeText(v.getContext(), "pause", Toast.LENGTH_SHORT).show();
 
     }
 }
