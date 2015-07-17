@@ -13,6 +13,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.froyith.spotifystreamer.data.ArtistData;
 import com.froyith.spotifystreamer.data.SongData;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,8 +33,18 @@ public class SongsFragment extends Fragment {
     private ArrayList<SongData> mDataList = new ArrayList<SongData>();
     private SongsArrayAdapter mSongsAdapter;
     private String strArtist;
-    public SongsFragment() {
-        // Required empty public constructor
+
+    public static SongsFragment newInstance(int index) {
+
+        SongsFragment f = new SongsFragment();
+        Bundle args = new Bundle();
+        args.putInt("index", index);
+        f.setArguments(args);
+        return f;
+    }
+
+    public int getShownIndex() {
+        return getArguments().getInt("index", 0);
     }
 
     @Override
@@ -45,31 +57,76 @@ public class SongsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_songs,container,false);
+        View rootView = inflater.inflate(R.layout.fragment_songs, container, false);
+        ArtistData adata;
 
+        //Toast.makeText(getActivity(), "oncreateview", Toast.LENGTH_SHORT).show();
         mDataList = new ArrayList<SongData>();//datasource to bound to our custom array adapter to list view controls
-        strArtist = (String) this.getActivity().getIntent().getExtras().get(Intent.EXTRA_REFERRER_NAME);
 
-        //Recover stored data if any, othewise flag that a song search needs to be performed
-        if (savedInstanceState != null && savedInstanceState.containsKey("KEY")){//try to grab our paraceable custom arraylist from savestate
+        /*
+                if (this.getActivity().getIntent() != null && this.getActivity().getIntent().getData() != null) {
+                    if (this.getActivity().getIntent().getExtras().get(Intent.EXTRA_REFERRER_NAME) != null)
+                        strArtist = (String) this.getActivity().getIntent().getExtras().get(Intent.EXTRA_REFERRER_NAME);
 
-            mDataList =  savedInstanceState.getParcelableArrayList("KEY");
+                    //Recover stored data if any, othewise flag that a song search needs to be performed
+                    if (savedInstanceState != null && savedInstanceState.containsKey("KEY")) {//try to grab our paraceable custom arraylist from savestate
 
-        }else{
+                        mDataList = savedInstanceState.getParcelableArrayList("KEY");
 
-            FetchSongsTask fetch = new FetchSongsTask();
-            fetch.execute((String)this.getActivity().getIntent().getExtras().get(Intent.EXTRA_TEXT));
-        }
+                    } else {
+
+                        if (strArtist != "") {
+                            FetchSongsTask fetch = new FetchSongsTask();
+                            if ((String) this.getActivity().getIntent().getExtras().get(Intent.EXTRA_TEXT) != null)
+                                fetch.execute((String) this.getActivity().getIntent().getExtras().get(Intent.EXTRA_TEXT));
+                        }
+                    }
+
+          */
+        if (this.getActivity().getIntent() != null )
+                if (this.getActivity().getIntent().getExtras() != null)
+                    if (this.getActivity().getIntent().getExtras().getParcelable("KEY") != null) {
+                        adata = this.getActivity().getIntent().getExtras().getParcelable("KEY");
+                        //strArtist = (String) this.getActivity().getIntent().getExtras().get(Intent.EXTRA_REFERRER_NAME);
+                        Toast.makeText(getActivity(), "adata", Toast.LENGTH_SHORT).show();
+                        //if (this.getActivity().getIntent().getData() != null) {
+                            if (savedInstanceState == null) {
+                                //pass this to the activity
+                                Bundle args = new Bundle();
+                                //args.putParcelable("KEY", adata);
+                            }
+                            if (savedInstanceState != null) {
+                                if (savedInstanceState.containsKey("KEY")) {
+                                    Toast.makeText(getActivity(), "shouldn't have key yet...", Toast.LENGTH_SHORT).show();
+                                    mDataList = savedInstanceState.getParcelableArrayList("KEY");
+                                }
+                            } else {
+                                if (adata != null)
+                                    if (adata.getArtistName() != "") {
+                                        FetchSongsTask fetch = new FetchSongsTask();
+                                        //if ((String) this.getActivity().getIntent().getExtras().get(Intent.EXTRA_TEXT) != null)
+                                        Toast.makeText(getActivity(), "here", Toast.LENGTH_SHORT).show();
+                                        if (adata.getArtistID() != "") {
+                                            Toast.makeText(getActivity(), "probbably wont see", Toast.LENGTH_SHORT).show();
+                                            fetch.execute(adata.getArtistID());
+                                        }
+                                    }
+
+                            }
+                        }
+                    
+//
+//
 
         mSongsAdapter = //custom adapter for song meta data
-        new SongsArrayAdapter(
-                //context
-                getActivity(),
-                R.layout.songs_list_item_layout,
-                R.id.list_item_songs_textview,
-                R.id.list_item_album_textview,
-                R.id.song_imageview,
-                mDataList);
+                new SongsArrayAdapter(
+                        //context
+                        getActivity(),
+                        R.layout.songs_list_item_layout,
+                        R.id.list_item_songs_textview,
+                        R.id.list_item_album_textview,
+                        R.id.song_imageview,
+                        mDataList);
 
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_songs);
@@ -79,19 +136,15 @@ public class SongsFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 
-
-
             public void onItemClick(AdapterView<?> paramAdapterView, View paramView, int paramInt,
                                     long paramLong) {
 
                 SongData sd = null;
-
-
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
 
-                sd = (SongData)paramAdapterView.getItemAtPosition(paramInt);
-                intent.putExtra(Intent.EXTRA_REFERRER_NAME,strArtist);
-                intent.putExtra(Intent.EXTRA_REFERRER,sd);
+                sd = (SongData) paramAdapterView.getItemAtPosition(paramInt);
+                intent.putExtra(Intent.EXTRA_REFERRER_NAME, strArtist);
+                intent.putExtra(Intent.EXTRA_REFERRER, sd);
 
                 startActivity(intent);
             }
@@ -104,11 +157,11 @@ public class SongsFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         //save the list so it can be retrieved without requerying
-        outState.putParcelableArrayList("KEY",mDataList);
+        outState.putParcelableArrayList("KEY", mDataList);
     }
 
 
-    public class FetchSongsTask extends AsyncTask<String,Void,SongData[]> {
+    public class FetchSongsTask extends AsyncTask<String, Void, SongData[]> {
         private final String LOG_TAG = SongsFragment.FetchSongsTask.class.getSimpleName();
 
 
@@ -129,46 +182,46 @@ public class SongsFragment extends Fragment {
                 Map<String, Object> options = new HashMap<>();
                 options.put("country", COUNTRY_CODE);
 
-                results = spotify.getArtistTopTrack(searchStr[0],options);
+                results = spotify.getArtistTopTrack(searchStr[0], options);
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 //catch RetrofitError
                 Log.d(this.LOG_TAG, e.toString());
 
             }
 
 
-            if (results != null){
-            if (results.tracks.size() > 0) {
-                songResults = new SongData[results.tracks.size()];
+            if (results != null) {
+                if (results.tracks.size() > 0) {
+                    songResults = new SongData[results.tracks.size()];
 
-                for (Track t : results.tracks) {
+                    for (Track t : results.tracks) {
 
-                    strImgUrl = null;
-                    //grab a picture url or null if none, but in for loop, then look for an ideal
-                    //image size and take that path, otherwise use what we have here
+                        strImgUrl = null;
+                        //grab a picture url or null if none, but in for loop, then look for an ideal
+                        //image size and take that path, otherwise use what we have here
 
-                    //find a reasonably sized image if available
-                    bFoundImg = false;
+                        //find a reasonably sized image if available
+                        bFoundImg = false;
 
-                    //fs: need to add song url and large image url
-                    //t.preview_url; //this will be for streaming
+                        //fs: need to add song url and large image url
+                        //t.preview_url; //this will be for streaming
 
-                    for (Image img : t.album.images) {
-                        if (img.height > 180 && img.height < 220 && bFoundImg == false) {
-                            strImgUrl = img.url;
-                            bFoundImg = true;
+                        for (Image img : t.album.images) {
+                            if (img.height > 180 && img.height < 220 && bFoundImg == false) {
+                                strImgUrl = img.url;
+                                bFoundImg = true;
+                            }
                         }
+                        //just grab last image from end of list if suitable size one isn't available
+                        if (bFoundImg == false && t.album.images.size() > 0) {
+                            strImgUrl = t.album.images.get(t.album.images.size() - 1).url;
+                        }
+                        sd = new SongData(t.name, strImgUrl, t.album.name, t.album.images.get(0).url, t.preview_url);
+                        songResults[i] = sd;
+                        i++;
                     }
-                    //just grab last image from end of list if suitable size one isn't available
-                    if (bFoundImg == false && t.album.images.size() > 0) {
-                        strImgUrl = t.album.images.get(t.album.images.size()-1).url;
-                    }
-                    sd = new SongData( t.name, strImgUrl,t.album.name,t.album.images.get(0).url,t.preview_url);
-                    songResults[i] = sd;
-                    i++;
                 }
-            }
             }
 
             return songResults;

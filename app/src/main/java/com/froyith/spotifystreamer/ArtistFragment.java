@@ -34,13 +34,20 @@ import kaaes.spotify.webapi.android.models.Image;
  * Artist thumbnails using picaso, list of artist from spotify api
  */
 public class ArtistFragment extends Fragment {
+
     private ArrayList<ArtistData> mDataList = new ArrayList<ArtistData>();
     private ArtistArrayAdapter mArtistAdapter;
     //private  EditText txtSearchArtist;//search for artist
     private SearchView searchView; //search for artist ;
-    public ArtistFragment() {
-    }
+    public ArtistFragment() {}
 
+    public interface Callback {
+
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(ArtistData adata);
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -70,11 +77,13 @@ public class ArtistFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             public void onItemClick(AdapterView<?> paramAdapterView, View paramView, int paramInt, long paramLong) {
-                Intent intent = new Intent(getActivity(), SongsActivity.class);
-                TextView v=(TextView) paramView.findViewById(R.id.list_item_artist_textview);
-                intent.putExtra(Intent.EXTRA_TEXT,(String)v.getTag());
-                intent.putExtra(Intent.EXTRA_REFERRER_NAME,v.getText());
-                startActivity(intent);
+                //Intent intent = new Intent(getActivity(), SongsActivity.class);
+                //TextView v=(TextView) paramView.findViewById(R.id.list_item_artist_textview);
+                //intent.putExtra(Intent.EXTRA_TEXT,(String)v.getTag());
+                //intent.putExtra(Intent.EXTRA_REFERRER_NAME,v.getText());
+                //startActivity(intent);
+                ((Callback) getActivity()).onItemSelected((ArtistData) paramAdapterView.getItemAtPosition(paramInt));
+
 
             }
         });

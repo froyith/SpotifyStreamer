@@ -32,14 +32,15 @@
         </activity>
 
         <service
-            android:name=".SpotifyStreamer"
-            android:exported="false" >
-        </service>
-        <service
             android:name=".SpotifyStreamingService"
             android:enabled="true"
             android:exported="true" >
         </service>
+
+        <activity
+            android:name=".PlayerActivity"
+            android:label="@string/title_activity_player" >
+        </activity>
     </application>
 
 </manifest>

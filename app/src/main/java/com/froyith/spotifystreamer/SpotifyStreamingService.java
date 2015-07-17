@@ -11,14 +11,15 @@ import android.widget.SeekBar;
 
 public class SpotifyStreamingService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
-        MediaPlayer.OnCompletionListener,Runnable{
+        MediaPlayer.OnCompletionListener,Runnable, SeekBar.OnSeekBarChangeListener{
 
     private MediaPlayer mediaPlayer = null;
-    private final String LOG_TAG = SpotifyStreamer.class.getSimpleName();
-
+    private final String LOG_TAG = SpotifyStreamingService.class.getSimpleName();
+    private Thread thread;
     //maybe create an onProgresschanged listener here to seek to position in the stream
     private SeekBar seekBar;
 
+    private boolean running = false;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //return super.onStartCommand(intent, flags, startId);
@@ -30,7 +31,7 @@ public class SpotifyStreamingService extends Service implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(this.LOG_TAG, "fs: " + "stop killing my service!");
+        Log.d(this.LOG_TAG, "fs:destroyed");
     }
 
     public SpotifyStreamingService() {
@@ -39,38 +40,61 @@ public class SpotifyStreamingService extends Service implements
     @Override
     public void onCreate() {
         super.onCreate();
-
-        init();
+        seekBar =  DetailActivity.seekBar;
+        seekBar.setOnSeekBarChangeListener(this);
+        initMediaPlayer();
     }
-public void init(){
+
+public void initMediaPlayer(){
+
     mediaPlayer = new MediaPlayer();
     mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
     mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
     mediaPlayer.setOnPreparedListener(this);
     mediaPlayer.setOnCompletionListener(this);
     mediaPlayer.setOnErrorListener(this);
-    seekBar =  DetailActivity.seekBar;
+
+
 }
 
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
         //throw new UnsupportedOperationException("Not yet implemented");
+
         return null;
     }
 
     private void handleActionPlay(String url) {
         //from developer.android.com - mediaplayer
+        Boolean bPlaying = false;
         Log.d(this.LOG_TAG, "fs:playing: " + url);
 
-        if (mediaPlayer == null) {
-            mediaPlayer = new MediaPlayer();
-        } else {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.release();
-                init();
-            }
+        if (mediaPlayer == null)
+            initMediaPlayer();
+        else {
+            //
 
+            try{
+                bPlaying = mediaPlayer.isPlaying();
+
+            } catch (Exception e){
+                //get java.lang.IllegalStateException when song finishes and its not playing
+                //maybe have to do something on onCompletion to get it's state right?
+
+                bPlaying = false;
+            }
+            if (bPlaying == true) {
+                //mediaPlayer.release();
+                //init();
+                DetailActivity.playButton.setImageResource(android.R.drawable.ic_media_play);//R.drawable.ic_media_play);
+
+                mediaPlayer.pause();
+            }
+            else{
+                initMediaPlayer();
+            }
+        }
 
                 try {
 
@@ -83,12 +107,20 @@ public void init(){
             }
 
 
-    }
+
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
+        //thread.interrupt();
+        //thread = null;
+        DetailActivity.playButton.setImageResource(android.R.drawable.ic_media_play);
         mediaPlayer.release();
-
+        //once I have a collection of songs to play, should probably start the next one
+        //after finishing...maybe even looping flag to loop the 10 tracks would be good idea...
+        //mp.stop();
+        //mp.reset();
+        //mp.setDataSource([nextElement]);
+        //mp.prepare();
     }
 
     @Override
@@ -101,10 +133,13 @@ public void init(){
     public void onPrepared(MediaPlayer mediaPlayer) {
         seekBar.setMax(mediaPlayer.getDuration());
         mediaPlayer.start();
+        DetailActivity.playButton.setImageResource(android.R.drawable.ic_media_pause);//R.drawable.ic_media_play);
+
         //seekBar.setMax(30);
         Log.d(this.LOG_TAG, "fs:" + mediaPlayer.getDuration());
         //seekBar.setProgress(15000);
-        new Thread(this).start();
+        thread = new Thread(this);
+        thread.start();
         //seekBar.setProgress(mediaPlayer.getCurrentPosition());
     }
 
@@ -112,13 +147,21 @@ public void init(){
     public void run() {
         int currentPosition= 0;
         String s;
-        int total = mediaPlayer.getDuration();
-        while (mediaPlayer!=null && currentPosition<total) {
+        boolean bPlaying = true;
+        int total = 0;
+        if (mediaPlayer != null) {
+            total = mediaPlayer.getDuration();
+
+
+        }
+        while (mediaPlayer!=null && currentPosition<total && bPlaying==true ) {
             try {
                 Thread.sleep(1000);
                 currentPosition= mediaPlayer.getCurrentPosition();
+                bPlaying = mediaPlayer.isPlaying();
 
             } catch (Exception e) {
+
                 return;
             }
 
@@ -127,7 +170,37 @@ public void init(){
 
         }
 
+        Log.d(this.LOG_TAG, "fs:runeneded");
+    }
 
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+        if (b==true)
+        {
+
+            //crashes if not playing
+            Log.d(this.LOG_TAG, "fs: " + "progresschangedmanually!" + i );
+           //unfortunatly this is always null since it's a different object that was created
+            //for the SeekBar listener
+            if (mediaPlayer != null){
+                //mediaPlayer.stop();
+                //mediaPlayer.reset();
+                mediaPlayer.seekTo(i);
+                //mediaPlayer.start();
+                Log.d(this.LOG_TAG, "fs: " + "seekingmedaplayer!" + i );
+            }
+        }
+
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        Log.d(this.LOG_TAG, "fs: " + "starttouch!");
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        Log.d(this.LOG_TAG, "fs: " + "stoptouch!");
     }
 /*
     @Override

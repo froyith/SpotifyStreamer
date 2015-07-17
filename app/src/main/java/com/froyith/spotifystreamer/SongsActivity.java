@@ -44,8 +44,11 @@ public class SongsActivity extends AppCompatActivity {
 
         //set action bar Artist name
         TextView textView = (TextView) v.findViewById(R.id.artistNameBar);
-        textView.setText((String)this.getIntent().getExtras().get(Intent.EXTRA_REFERRER_NAME));
-
+        if (this.getIntent() == null || this.getIntent().getData() == null){
+            ArtistData adata;
+            adata = this.getIntent().getExtras().getParcelable("KEY");
+            textView.setText(adata.getArtistName());
+        }
     }
 
     @Override

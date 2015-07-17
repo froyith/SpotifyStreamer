@@ -1,16 +1,44 @@
 package com.froyith.spotifystreamer;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+import com.froyith.spotifystreamer.data.ArtistData;
 
+public class MainActivity extends AppCompatActivity implements ArtistFragment.Callback {
+    public static boolean mTwoPane = false;
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //this is for tablet
+
+        if (findViewById(R.id.song_detail_container) != null) {
+            // The detail container view will be present only in the large-screen layouts
+            // (res/layout-sw600dp). If this view is present, then the activity should be
+            // in two-pane mode.
+            mTwoPane = true;
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+
+            if (savedInstanceState == null) {
+
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.song_detail_container, new SongsFragment(),DETAILFRAGMENT_TAG )
+                        .commit();
+
+            }
+
+        } else {
+            mTwoPane = false;
+        }
+
+
     }
 
 
@@ -39,4 +67,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onItemSelected(ArtistData adata) {
+        if (mTwoPane == true){
+            Bundle args = new Bundle();
+            args.putParcelable("KEY"  ,adata);
+            SongsFragment fragment = new SongsFragment();
+            fragment.setArguments(args);
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.song_detail_container,fragment,DETAILFRAGMENT_TAG)
+                    .commit();
+
+        }else{
+            Intent intent = new Intent(this,SongsActivity.class)
+                    .putExtra("KEY",adata);
+
+            startActivity(intent);
+
+        }
+    }
 }
