@@ -33,6 +33,7 @@ public class SongsFragment extends Fragment {
     private ArrayList<SongData> mDataList = new ArrayList<SongData>();
     private SongsArrayAdapter mSongsAdapter;
     private String strArtist;
+    private ArtistData adata;
 
     public static SongsFragment newInstance(int index) {
 
@@ -58,65 +59,48 @@ public class SongsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_songs, container, false);
-        ArtistData adata;
+        adata = null;
 
         //Toast.makeText(getActivity(), "oncreateview", Toast.LENGTH_SHORT).show();
         mDataList = new ArrayList<SongData>();//datasource to bound to our custom array adapter to list view controls
 
-        /*
-                if (this.getActivity().getIntent() != null && this.getActivity().getIntent().getData() != null) {
-                    if (this.getActivity().getIntent().getExtras().get(Intent.EXTRA_REFERRER_NAME) != null)
-                        strArtist = (String) this.getActivity().getIntent().getExtras().get(Intent.EXTRA_REFERRER_NAME);
 
-                    //Recover stored data if any, othewise flag that a song search needs to be performed
-                    if (savedInstanceState != null && savedInstanceState.containsKey("KEY")) {//try to grab our paraceable custom arraylist from savestate
+        //this get the artist data from intent from phone view
+        if (this.getActivity().getIntent() != null)
+            if (this.getActivity().getIntent().getExtras() != null)
+                if (this.getActivity().getIntent().getExtras().getParcelable("KEY") != null) {
+                    Toast.makeText(getActivity(), "grab adata", Toast.LENGTH_SHORT).show();
+                    adata = this.getActivity().getIntent().getExtras().getParcelable("KEY");
+                }
 
-                        mDataList = savedInstanceState.getParcelableArrayList("KEY");
 
-                    } else {
 
-                        if (strArtist != "") {
-                            FetchSongsTask fetch = new FetchSongsTask();
-                            if ((String) this.getActivity().getIntent().getExtras().get(Intent.EXTRA_TEXT) != null)
-                                fetch.execute((String) this.getActivity().getIntent().getExtras().get(Intent.EXTRA_TEXT));
-                        }
-                    }
+        //this get artist data from arguments for tablet
+        if (this.getArguments() != null)
+            if (this.getArguments().containsKey("KEY")) {
+                adata = this.getArguments().getParcelable("KEY");
+            }
 
-          */
-        if (this.getActivity().getIntent() != null )
-                if (this.getActivity().getIntent().getExtras() != null)
-                    if (this.getActivity().getIntent().getExtras().getParcelable("KEY") != null) {
-                        adata = this.getActivity().getIntent().getExtras().getParcelable("KEY");
-                        //strArtist = (String) this.getActivity().getIntent().getExtras().get(Intent.EXTRA_REFERRER_NAME);
-                        Toast.makeText(getActivity(), "adata", Toast.LENGTH_SHORT).show();
-                        //if (this.getActivity().getIntent().getData() != null) {
-                            if (savedInstanceState == null) {
-                                //pass this to the activity
-                                Bundle args = new Bundle();
-                                //args.putParcelable("KEY", adata);
-                            }
-                            if (savedInstanceState != null) {
-                                if (savedInstanceState.containsKey("KEY")) {
-                                    Toast.makeText(getActivity(), "shouldn't have key yet...", Toast.LENGTH_SHORT).show();
-                                    mDataList = savedInstanceState.getParcelableArrayList("KEY");
-                                }
-                            } else {
-                                if (adata != null)
-                                    if (adata.getArtistName() != "") {
-                                        FetchSongsTask fetch = new FetchSongsTask();
-                                        //if ((String) this.getActivity().getIntent().getExtras().get(Intent.EXTRA_TEXT) != null)
-                                        Toast.makeText(getActivity(), "here", Toast.LENGTH_SHORT).show();
-                                        if (adata.getArtistID() != "") {
-                                            Toast.makeText(getActivity(), "probbably wont see", Toast.LENGTH_SHORT).show();
-                                            fetch.execute(adata.getArtistID());
-                                        }
-                                    }
 
-                            }
-                        }
-                    
-//
-//
+        if (savedInstanceState == null) {
+            //pass this to the activity
+            Bundle args = new Bundle();
+            args.putParcelable("KEY", adata);
+        }
+        else
+            if (savedInstanceState.containsKey("KEY"))
+                mDataList = savedInstanceState.getParcelableArrayList("KEY");
+
+
+
+
+        if (adata != null)
+            if (adata.getArtistName() != "") {
+                FetchSongsTask fetch = new FetchSongsTask();
+                if (adata.getArtistID() != "")
+                    fetch.execute(adata.getArtistID());
+            }
+
 
         mSongsAdapter = //custom adapter for song meta data
                 new SongsArrayAdapter(
