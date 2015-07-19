@@ -20,10 +20,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DetailActivity"
-            android:label="@string/title_activity_detail" >
-        </activity>
-        <activity
             android:name=".SongsActivity"
             android:label="@string/title_activity_songs" >
             <meta-data

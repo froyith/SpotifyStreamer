@@ -1,6 +1,9 @@
 package com.froyith.spotifystreamer;
 
 
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -59,6 +62,7 @@ public class SongsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_songs, container, false);
+
         adata = null;
 
         //Toast.makeText(getActivity(), "oncreateview", Toast.LENGTH_SHORT).show();
@@ -124,13 +128,15 @@ public class SongsFragment extends Fragment {
                                     long paramLong) {
 
                 SongData sd = null;
-                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                Intent intent = new Intent(getActivity(), PlayerActivity.class);
 
                 sd = (SongData) paramAdapterView.getItemAtPosition(paramInt);
                 intent.putExtra(Intent.EXTRA_REFERRER_NAME, strArtist);
                 intent.putExtra(Intent.EXTRA_REFERRER, sd);
 
                 startActivity(intent);
+
+
             }
         });
 

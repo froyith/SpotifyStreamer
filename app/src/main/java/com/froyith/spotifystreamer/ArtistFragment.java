@@ -195,7 +195,7 @@ public class ArtistFragment extends Fragment {
 
 
               } else {
-                Toast.makeText(getActivity(), "No search results found, Please refine your search", Toast.LENGTH_SHORT).show();
+                               Toast.makeText(getActivity(), "No search results found, Please refine your search", Toast.LENGTH_SHORT).show();
 
                 }
             }

@@ -40,7 +40,7 @@ public class SpotifyStreamingService extends Service implements
     @Override
     public void onCreate() {
         super.onCreate();
-        seekBar =  DetailActivity.seekBar;
+        seekBar =  PlayerActivityFragment.seekBar;
         seekBar.setOnSeekBarChangeListener(this);
         initMediaPlayer();
     }
@@ -87,7 +87,7 @@ public void initMediaPlayer(){
             if (bPlaying == true) {
                 //mediaPlayer.release();
                 //init();
-                DetailActivity.playButton.setImageResource(android.R.drawable.ic_media_play);//R.drawable.ic_media_play);
+                PlayerActivityFragment.playButton.setImageResource(android.R.drawable.ic_media_play);//R.drawable.ic_media_play);
 
                 mediaPlayer.pause();
             }
@@ -113,7 +113,7 @@ public void initMediaPlayer(){
     public void onCompletion(MediaPlayer mediaPlayer) {
         //thread.interrupt();
         //thread = null;
-        DetailActivity.playButton.setImageResource(android.R.drawable.ic_media_play);
+        PlayerActivityFragment.playButton.setImageResource(android.R.drawable.ic_media_play);
         mediaPlayer.release();
         //once I have a collection of songs to play, should probably start the next one
         //after finishing...maybe even looping flag to loop the 10 tracks would be good idea...
@@ -133,7 +133,7 @@ public void initMediaPlayer(){
     public void onPrepared(MediaPlayer mediaPlayer) {
         seekBar.setMax(mediaPlayer.getDuration());
         mediaPlayer.start();
-        DetailActivity.playButton.setImageResource(android.R.drawable.ic_media_pause);//R.drawable.ic_media_play);
+        PlayerActivityFragment.playButton.setImageResource(android.R.drawable.ic_media_pause);//R.drawable.ic_media_play);
 
         //seekBar.setMax(30);
         Log.d(this.LOG_TAG, "fs:" + mediaPlayer.getDuration());
