@@ -34,16 +34,7 @@ public class PlayerActivityFragment extends DialogFragment {
      * Create a new instance of MyDialogFragment, providing "num"
      * as an argument.
      */
-    static PlayerActivityFragment newInstance(int num) {
-        PlayerActivityFragment f = new PlayerActivityFragment();
 
-        // Supply num input as an argument.
-        Bundle args = new Bundle();
-        args.putInt("num", num);
-        f.setArguments(args);
-
-        return f;
-    }
 
     public PlayerActivityFragment() {
     }
@@ -57,6 +48,13 @@ public class PlayerActivityFragment extends DialogFragment {
 
     }
 
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        //dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        return dialog;
+        //return super.onCreateDialog(savedInstanceState);
+    }
 
 
     @Override
@@ -65,16 +63,32 @@ public class PlayerActivityFragment extends DialogFragment {
 
 
         View rootView = inflater.inflate(R.layout.fragment_player, container, false);
-
+        String strArtist = null;
 
         seekBar = (SeekBar) rootView.findViewById(R.id.mediaSeekBar);
-
-
-        mSongData = (SongData) getActivity().getIntent().getExtras().get(Intent.EXTRA_REFERRER);
-        String strArtist = (String) getActivity().getIntent().getExtras().get(Intent.EXTRA_REFERRER_NAME);
+        if (this.getArguments() != null) {
+            mSongData = this.getArguments().getParcelable("KEY");
+            strArtist = this.getArguments().getString("ARTIST");
+        }else if (getActivity().getIntent() != null ) {
+            mSongData = (SongData) getActivity().getIntent().getExtras().get(Intent.EXTRA_REFERRER);
+            strArtist = (String) getActivity().getIntent().getExtras().get(Intent.EXTRA_REFERRER_NAME);
+        }
         ImageView imgView = (ImageView) rootView.findViewById(R.id.imgAlbumDetail);
         playButton = (ImageButton) rootView.findViewById(R.id.play);
+        playButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = new Intent(v.getContext(), SpotifyStreamingService.class);
+                intent.setAction("com.froyith.spotifystreamingservice.action.PLAY");
 
+                intent.putExtra(Intent.EXTRA_TEXT, PlayerActivityFragment.mSongData.getmTrackURL());
+                getActivity().startService(intent);
+                Toast.makeText(v.getContext(), PlayerActivityFragment.mSongData.getmTrackURL(), Toast.LENGTH_SHORT).show();
+                // do something
+            }
+        });
         TextView txtAlbum = (TextView) rootView.findViewById(R.id.txtAlbumDetail);
 
         TextView txtSong = (TextView) rootView.findViewById(R.id.txtSongDetail);
@@ -86,8 +100,6 @@ public class PlayerActivityFragment extends DialogFragment {
 
 
 
-        //show();
-        //return null;
         return rootView;
     }
 

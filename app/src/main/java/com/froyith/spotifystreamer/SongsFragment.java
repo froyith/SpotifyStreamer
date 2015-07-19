@@ -37,6 +37,7 @@ public class SongsFragment extends Fragment {
     private SongsArrayAdapter mSongsAdapter;
     private String strArtist;
     private ArtistData adata;
+    private boolean mIsLargeLayout;
 
     public static SongsFragment newInstance(int index) {
 
@@ -62,7 +63,7 @@ public class SongsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_songs, container, false);
-
+        mIsLargeLayout = getResources().getBoolean(R.bool.large_layout);
         adata = null;
 
         //Toast.makeText(getActivity(), "oncreateview", Toast.LENGTH_SHORT).show();
@@ -128,13 +129,44 @@ public class SongsFragment extends Fragment {
                                     long paramLong) {
 
                 SongData sd = null;
-                Intent intent = new Intent(getActivity(), PlayerActivity.class);
+
 
                 sd = (SongData) paramAdapterView.getItemAtPosition(paramInt);
-                intent.putExtra(Intent.EXTRA_REFERRER_NAME, strArtist);
-                intent.putExtra(Intent.EXTRA_REFERRER, sd);
 
-                startActivity(intent);
+
+
+                Bundle args = new Bundle();
+                args.putParcelable("KEY"  ,sd);
+                args.putString("ARTIST",strArtist);
+
+
+
+                FragmentManager fragmentManager = getFragmentManager();
+
+                PlayerActivityFragment newFragment = new PlayerActivityFragment();
+                newFragment.setArguments(args);
+
+                if (mIsLargeLayout){
+                    newFragment.show(fragmentManager,"dialog");
+
+
+                }else {
+
+
+                    Intent intent = new Intent(getActivity(), PlayerActivity.class);
+                    intent.putExtra(Intent.EXTRA_REFERRER_NAME, strArtist);
+                    intent.putExtra(Intent.EXTRA_REFERRER, sd);
+
+                    startActivity(intent);
+
+
+                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    transaction.add(android.R.id.content,newFragment)
+                            .addToBackStack(null).commit();
+                }
+
+
 
 
             }

@@ -80,7 +80,6 @@ android:gravity="center_horizontal">
     <ImageButton
         android:src="@android:drawable/ic_media_play"
         android:id="@+id/play"
-        android:onClick="playerHandler"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
@@ -89,7 +88,6 @@ android:gravity="center_horizontal">
         />
     <ImageButton
         android:src="@android:drawable/ic_media_next"
-        android:onClick="pauseHandler"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
